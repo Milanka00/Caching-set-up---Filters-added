@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  envoy_new:
+    build: ./envoy
+    ports:
+      - "9095:9095"
+    networks:
+      - proxy_network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "500M"  # 500 MB
+
+  backend_new:
+    build: ./backend
+    ports:
+      - "8081:8081"
+    networks:
+      - proxy_network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1G"  # 1 GB
+  
+  backend2_new:
+    build: ./backend2
+    ports:
+      - "8082:8082"
+    networks:
+      - proxy_network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1G"  # 1 GB
+
+  varnish_new:
+    build: ./varnish
+    ports:
+      - "8080:80"
+    networks:
+      - proxy_network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500M"  # 500 MB
+    command: 
+       -s default=malloc,1M
+       -s org1=malloc,3G
+       -s org2=malloc,1G
+
+networks:
+  proxy_network:
+    driver: bridge
