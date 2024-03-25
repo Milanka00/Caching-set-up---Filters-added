@@ -25,6 +25,14 @@ services:
           cpus: "2.0"
           memory: "1G"  # 1 GB
   
+  auth:
+    build: ./Auth
+    ports:
+      - "9002:9002"
+    networks:
+      - proxy_network
+
+  
   backend2_new:
     build: ./backend2
     ports:

@@ -1,1 +1,1 @@
-varnish as an intermediate layer
+Adding  Ext Authz, rate limiter and lua filters
