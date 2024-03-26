@@ -7,6 +7,9 @@ backend default {
 }
 
 sub vcl_recv {
+     # after adding ext_authz filter
+     unset req.http.authorization;
+
      set req.http.Host = req.http.redirect-backend;
      set req.url = req.http.x-temp-path;
      set req.url = std.querysort(req.url);
