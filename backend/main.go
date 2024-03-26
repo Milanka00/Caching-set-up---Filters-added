@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
-	
 )
 
 var payloads map[int][]byte
@@ -35,7 +35,32 @@ func main() {
 	http.ListenAndServe(":8081", nil)
 }
 
+// func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
+// 	id, err := strconv.Atoi(r.URL.Path[len("/publiccache/"):])
+// 	if err != nil {
+// 		http.Error(w, "Invalid ID", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	payload, ok := payloads[id]
+// 	if !ok {
+// 		http.Error(w, "ID not found", http.StatusNotFound)
+// 		return
+// 	}
+
+// 	w.Header().Set("Cache-Control", "public, max-age=180")
+// 	w.Write(payload)
+// 	additionalContent := []byte(" cached as public for ID " + strconv.Itoa(id))
+// 	w.Write(additionalContent)
+// }
+
 func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.Header.Get("x-current-user")
+	if username == "" {
+		http.Error(w, "User information missing", http.StatusUnauthorized)
+		return
+	}
+
 	id, err := strconv.Atoi(r.URL.Path[len("/publiccache/"):])
 	if err != nil {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
@@ -50,9 +75,22 @@ func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Cache-Control", "public, max-age=180")
 	w.Write(payload)
-	additionalContent := []byte(" cached as public for ID " + strconv.Itoa(id))
+	additionalContent := []byte(" cached as public for ID " + strconv.Itoa(id) + " for user " + username)
 	w.Write(additionalContent)
 }
+
+func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := os.Getenv("AUTH_TOKEN")
+		if token == "" {
+			http.Error(w, "Authorization token missing", http.StatusInternalServerError)
+			return
+		}
+		r.Header.Set("Authorization", "Bearer "+token)
+		next.ServeHTTP(w, r)
+	}
+}
+
 
 func PrivateCacheHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Cache-Control", "private, max-age=3600")
