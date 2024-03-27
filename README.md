@@ -1,1 +1,4 @@
-Adding  Ext Authz, rate limiter and lua filters
+## Following architecture is tried out
+
+![Architecture overview](./Readme/archi.png)
+
