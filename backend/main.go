@@ -31,8 +31,8 @@ func main() {
     })
 
 	// Start server
-	fmt.Println("Server is listening on port 8081...")
-	http.ListenAndServe(":8081", nil)
+	fmt.Println("Server is listening on port 8083...")
+	http.ListenAndServe(":8083", nil)
 }
 
 // func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {

@@ -60,12 +60,27 @@ static_resources:
                                   exact_match: "varnish"
                             route:
                               cluster: varnish_backend_cluster
-                              prefix_rewrite: "/publiccache/"
                               rate_limits:
                                 - actions:
                                     - request_headers:
                                         header_name: "foo"
                                         descriptor_key: "foo"
+                              prefix_rewrite: "/publiccache/"
+
+                          - match:
+                              prefix: "/customurl/"
+                              headers:
+                                - name: "x-cluster-header"
+                                  exact_match: "actual_backend"
+                            route:
+                              cluster: actual_backend_cluster
+                              rate_limits:
+                                - actions:
+                                    - request_headers:
+                                        header_name: "foo"
+                                        descriptor_key: "foo"
+                              prefix_rewrite: "/publiccache/"
+
                           - match:
                               prefix: "/"
                               headers:
@@ -142,7 +157,7 @@ static_resources:
                   address:
                     socket_address:
                       address: backend_new
-                      port_value: 8081
+                      port_value: 8083
     - name: actual_backend2_cluster
       connect_timeout: 0.25s
       type: STRICT_DNS
@@ -184,4 +199,4 @@ static_resources:
                   address:
                     socket_address:
                       address: ratelimit
-                      port_value: 9090
+                      port_value: 8081

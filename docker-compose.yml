@@ -16,7 +16,7 @@ services:
   backend_new:
     build: ./backend
     ports:
-      - "8081:8081"
+      - "8083:8083"
     networks:
       - proxy_network
     deploy:
@@ -75,7 +75,7 @@ services:
     command: /bin/ratelimit
     ports:
       - 9090:9090
-      - 9091:9091
+      - 8081:8081
       - 6070:6070
     depends_on:
       - redis
