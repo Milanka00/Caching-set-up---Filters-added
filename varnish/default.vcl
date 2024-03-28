@@ -17,7 +17,7 @@ sub vcl_recv {
 
 
 sub vcl_miss {
-    if (req.http.x-cluster-header == "varnish") {
+    if (req.http.x-cluster-header == "varnish_backend_cluster") {
         set req.http.x-cluster-header = req.http.redirect-backend;  
     } 
         return (fetch);

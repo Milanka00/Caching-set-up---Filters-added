@@ -67,13 +67,37 @@ static_resources:
                       - name: local_service
                         domains: ["*"]
                         routes:
+                          # - match:
+                          #     prefix: "/customurl/"
+                          #     headers:
+                          #       - name: "x-cluster-header"
+                          #         exact_match: "varnish"
+                          #   route:
+                          #     cluster: varnish_backend_cluster
+                          #     rate_limits:
+                          #       - actions:
+                          #           - request_headers:
+                          #               header_name: "foo"
+                          #               descriptor_key: "foo"
+                          #     prefix_rewrite: "/publiccache/"
+
+                          # - match:
+                          #     prefix: "/customurl/"
+                          #     headers:
+                          #       - name: "x-cluster-header"
+                          #         exact_match: "actual_backend"
+                          #   route:
+                          #     cluster: actual_backend_cluster
+                          #     rate_limits:
+                          #       - actions:
+                          #           - request_headers:
+                          #               header_name: "foo"
+                          #               descriptor_key: "foo"
+                          #     prefix_rewrite: "/publiccache/"
                           - match:
                               prefix: "/customurl/"
-                              headers:
-                                - name: "x-cluster-header"
-                                  exact_match: "varnish"
                             route:
-                              cluster: varnish_backend_cluster
+                              cluster_header: "x-cluster-header"
                               rate_limits:
                                 - actions:
                                     - request_headers:
@@ -81,19 +105,6 @@ static_resources:
                                         descriptor_key: "foo"
                               prefix_rewrite: "/publiccache/"
 
-                          - match:
-                              prefix: "/customurl/"
-                              headers:
-                                - name: "x-cluster-header"
-                                  exact_match: "actual_backend"
-                            route:
-                              cluster: actual_backend_cluster
-                              rate_limits:
-                                - actions:
-                                    - request_headers:
-                                        header_name: "foo"
-                                        descriptor_key: "foo"
-                              prefix_rewrite: "/publiccache/"
 
                           - match:
                               prefix: "/"
@@ -128,22 +139,24 @@ static_resources:
                     - name: local_service
                       domains: ["*"]
                       routes:
-                        - match:
-                            prefix: "/customurl/"
-                            headers:
-                              - name: "x-cluster-header"
-                                exact_match: "actual_backend"
-                          route:
-                            cluster: actual_backend_cluster
-                            prefix_rewrite: "/publiccache/"
+                          - match:
+                              prefix: "/customurl/"
+                            route:
+                              cluster_header: "x-cluster-header"
+                              rate_limits:
+                                - actions:
+                                    - request_headers:
+                                        header_name: "foo"
+                                        descriptor_key: "foo"
+                              prefix_rewrite: "/publiccache/"
                             
-                        - match:
-                            prefix: "/"
-                            headers:
-                              - name: "x-cluster-header"
-                                exact_match: "actual_backend2"
-                          route:
-                            cluster: actual_backend2_cluster
+                          - match:
+                              prefix: "/"
+                              headers:
+                                - name: "x-cluster-header"
+                                  exact_match: "actual_backend2"
+                            route:
+                              cluster: actual_backend2_cluster
 
   clusters:
     - name: varnish_backend_cluster
