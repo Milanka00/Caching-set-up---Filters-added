@@ -6,6 +6,11 @@ backend default {
     .port = "9096";
 }
 
+acl purge {
+    "localhost";
+    "envoy_new";
+}
+
 sub vcl_recv {
      # after adding ext_authz filter
      unset req.http.authorization;
@@ -13,6 +18,14 @@ sub vcl_recv {
      set req.http.Host = req.http.redirect-backend;
      set req.url = req.http.x-temp-path;
      set req.url = std.querysort(req.url);
+
+     if (req.method == "PURGE") {
+		# check if the client is allowed to purge content
+		if (!client.ip ~ purge) {
+			return(synth(405,"Not allowed."));
+		}
+		return (purge);
+	}
 }
 
 
