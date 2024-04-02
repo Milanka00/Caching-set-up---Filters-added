@@ -85,8 +85,7 @@ func PrivateCacheHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getresponseWithoutHeaders(w http.ResponseWriter, r *http.Request) {
-   // w.Write(payload)
-    // sleepBeforeRespond()
+	w.Write([]byte("Caching is applied through UI"))
 }
 
 func NoCacheHandler(w http.ResponseWriter, r *http.Request) {

@@ -40,7 +40,7 @@ descriptors:
   - key: foo
     rate_limit:
       unit: minute
-      requests_per_unit: 4
+      requests_per_unit: 20
     descriptors:
       - key: bar
         rate_limit:
