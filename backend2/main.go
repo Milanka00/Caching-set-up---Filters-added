@@ -72,7 +72,7 @@ func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Cache-Control", "public, max-age=60")
+	w.Header().Set("Cache-Control", "public, max-age=600")
 	w.Write(payload)
 	additionalContent := []byte(" cached as public for ID " + strconv.Itoa(id))
 	w.Write(additionalContent)
@@ -98,7 +98,7 @@ func generatePayloads() {
 	once.Do(func() {
 		payloads = make(map[int][]byte)
 		for i := 1; i <= 50; i++ {
-			payload := make([]byte, 102400)
+			payload := make([]byte, 2097152)
 			for j := range payload {
 				payload[j] = 'y'
 			}

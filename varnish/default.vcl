@@ -42,25 +42,52 @@ sub vcl_backend_fetch {
         set bereq.url = bereq.http.x-temp-path;
         set bereq.url = std.querysort(bereq.url);
     }
+
+    
+
 }
 
 sub vcl_backend_response {
+
     # Don't cache 404 responses
     if (beresp.status == 404) {
         set beresp.uncacheable = true;
     }
 
+    if (beresp.http.X-Varnish-Error == "ExpKill" || beresp.http.X-Varnish-Error == "Could not get storage") {
+        // Mark the response as uncacheable
+        set beresp.uncacheable = true;
+        // Retry the request without caching
+        return (retry);
+    }
+
+    # Determine the appropriate storage and check response size against available storage size
     if (bereq.url ~ "/org1/") {
+        if (std.integer(beresp.http.Content-Length, 0) > std.integer(std.getenv("ORG1_CACHE_MAX_SIZE"), 0)) {
+            set beresp.uncacheable = true;
+            return (deliver);
+        }
         set beresp.storage = storage.org1;
         set beresp.http.x-storage = "org1";
     } elsif (bereq.url ~ "/org2/") {
+        if (std.integer(beresp.http.Content-Length, 0) > std.integer(std.getenv("ORG2_CACHE_MAX_SIZE"), 0)) {
+            set beresp.uncacheable = true;
+            return (deliver);
+        }
         set beresp.storage = storage.org2;
         set beresp.http.x-storage = "org2";
     } else {
+          if (std.integer(beresp.http.Content-Length, 0) > 1048576) {
+            set beresp.uncacheable = true;
+            return (deliver);
+        }
         set beresp.storage = storage.default; // Default storage
         set beresp.http.x-storage = "default";
     }
+
+
 }
+
 
 
 
