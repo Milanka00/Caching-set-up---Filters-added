@@ -54,12 +54,6 @@ sub vcl_backend_response {
         set beresp.uncacheable = true;
     }
 
-    if (beresp.http.X-Varnish-Error == "ExpKill" || beresp.http.X-Varnish-Error == "Could not get storage") {
-        // Mark the response as uncacheable
-        set beresp.uncacheable = true;
-        // Retry the request without caching
-        return (retry);
-    }
 
     # Determine the appropriate storage and check response size against available storage size
     if (bereq.url ~ "/org1/") {

@@ -12,6 +12,9 @@ services:
         limits:
           cpus: "1.0"
           memory: "500M"  # 500 MB
+        reservations:
+          cpus: "1.0"
+          memory: "500M"
 
   backend_new:
     build: ./backend
@@ -24,6 +27,9 @@ services:
         limits:
           cpus: "2.0"
           memory: "1G"  # 1 GB
+        reservations:
+          cpus: "2.0"
+          memory: "1G"
   
   auth:
     build: ./Auth
@@ -56,6 +62,9 @@ services:
         limits:
           cpus: "0.5"
           memory: "500M"  # 500 MB
+        reservations:
+          cpus: "0.5"
+          memory: "500M"
     environment:
       ORG1_CACHE_MAX_SIZE: "3221225472"  # 3GB
       ORG2_CACHE_MAX_SIZE: "1073741824"  # 1GB
